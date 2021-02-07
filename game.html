@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demosocracy Game</title>
+</head>
+
+<body>
+    <script>
+        function human() {
+            opinionVector = [Math.random(), Math.random()]
+            return { opinionVector }
+        }
+
+        function delegate() {
+            opinionVector = [Math.random(), Math.random()]
+            return { opinionVector }
+        }
+
+        function optimalDelegate(human, delegates) {
+            for (let i = 0; i < delegates.length; i++) {
+                delegate_dot_product = 0
+                delegate_euclidean_distance = 0
+                for (let j = 0; j < delegates[i].opinionVector.length; j++) {
+                    delegate_euclidean_distance += Math.pow(delegates[i].opinionVector[j] - human.opinionVector[j], 2)
+                }
+                delegate_euclidean_distance = Math.sqrt(delegate_euclidean_distance)
+                console.log(`human opinion was ${human.opinionVector} and delegate was ${delegates[i].opinionVector}
+                This means that the euclidean distance is: ${delegate_euclidean_distance}`)
+            }
+        }
+
+        function game() {
+            humans = []
+            delegates = []
+            for (let i = 0; i < 3; i++) {
+                humans[i] = human()
+                humans[i] = human()
+                humans[i] = human()
+                delegates[i] = delegate()
+            }
+
+            optimalDelegate(humans[0], delegates)
+        }
+        game()
+        //One line fizzbuzz don't ask why
+        /*for (let i = 1; i < 100; i++) {
+            console.log(`${i}: ${"fizz".repeat((i % 3 == 0))}${"buzz".repeat((i % 5 == 0))}`)
+        }*/
+
+
+    </script>
+
+</body>
+
+</html>

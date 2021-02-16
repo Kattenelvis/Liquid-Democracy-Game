@@ -14,6 +14,7 @@
     <script type="text/javascript">
         function human() {
             opinionVector = math.matrix([[Math.random()], [Math.random()]])
+            optimaldelegate = 0;
             return { opinionVector }
         }
 
@@ -54,20 +55,18 @@
         function game(numberOfHumans, numberOfDelegates) {
             humans = []
             delegates = []
-            for (let i = 0; i < numberOfHumans; i++) {
-                humans[i] = human()
-            }
 
             for (let i = 0; i < numberOfDelegates; i++) {
                 delegates[i] = delegate()
             }
 
+            for (let i = 0; i < numberOfHumans; i++) {
+                humans[i] = human()
+                humans[i].optimaldelegate = optimalDelegate(humans[i], delegates)
+            }
 
-            optimalDelegate(humans[0], delegates)
+            visualizeOpinionVector(400, 400, 15)
         }
-
-        game(5, 2)
-
 
         function visualizeOpinionVector(w, h, r) {
             var canvas = document.createElement("Canvas");
@@ -81,6 +80,7 @@
 
             putOpVecOnCanvas(ctx, delegates, "#4411AA", w, h, r)
 
+            showOptimalDelegateConnection(ctx, humans, w, h)
             document.body.appendChild(canvas)
         }
 
@@ -95,7 +95,15 @@
             }
         }
 
-        visualizeOpinionVector(400, 400, 15)
+        function showOptimalDelegateConnection(ctx, humans, w, h) {
+            for (let i = 0; i < humans.length; i++) {
+                ctx.moveTo(w * humans[i].opinionVector._data[0][0], h - h * humans[i].opinionVector._data[1][0])
+                ctx.lineTo(humans[i].optimaldelegate.opinionVector._data[0][0] * w, h - h * humans[i].optimaldelegate.opinionVector._data[1][0]);
+                ctx.stroke();
+            }
+        }
+
+        game(5, 2)
 
         //One line fizzbuzz don't ask why
         /*for (let i = 1; i < 100; i++) {

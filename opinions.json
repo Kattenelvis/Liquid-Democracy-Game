@@ -1,0 +1,15 @@
+{
+    "Energy": {
+        "Solar Power": {
+            "Subsidies": 3,
+            "Green Home subsidies": 1,
+            "Technology Research": 2
+        },
+        "Nuclear Power": {
+            "Subsidies": 3,
+            "Technology Research": 2,
+            "Build New Reactors": 8
+        }
+    },
+    "Education": {}
+}

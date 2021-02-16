@@ -9,12 +9,9 @@
 </head>
 
 <body>
+
+
     <script type="text/javascript">
-
-
-        console.log(math.add(math.matrix([[0], [1], [5]]), math.matrix([[1], [1], [1]])))
-        console.log(math.multiply(math.transpose(math.matrix([[0], [1], [5]])), math.matrix([[1], [1], [1]])))
-
         function human() {
             opinionVector = math.matrix([[Math.random()], [Math.random()]])
             return { opinionVector }
@@ -25,46 +22,81 @@
             return { opinionVector }
         }
 
-        function optimalDelegate(human, delegates) {
-
-
-
-            for (let i = 0; i < delegates.length; i++) {
-                delegate_dot_product = 0
-                delegate_euclidean_distance = 0
-                for (let j = 0; j < delegates[i].opinionVector.length; j++) {
-                    delegate_euclidean_distance += Math.pow(delegates[i].opinionVector[j] - human.opinionVector[j], 2)
-                    delegate_dot_product += delegates[i].opinionVector[j] * human.opinionVector[j]
-                }
-                delegate_euclidean_distance = Math.sqrt(delegate_euclidean_distance)
-                delegate_dot_product = delegate_dot_product
-                //console.log(`human opinion was ${human.opinionVector} and delegate was ${delegates[i].opinionVector}
-                //This means that the euclidean distance is: ${delegate_euclidean_distance}
-                //And the normalized dot product is ${delegate_dot_product / delegate_euclidean_distance}`)
-
-                delegate_euclidean_distance = math.add(delegates[i].opinionVector, math.multiply(human.opinionVector, -1))
-
-                console.log(`human opinion was ${human.opinionVector} and delegate was ${delegates[i].opinionVector}
-                This means that the euclidean distance is: ${delegate_euclidean_distance}
-                And the normalized dot product is ${delegate_dot_product / delegate_euclidean_distance}`)
-
-
-            }
+        function euclideanDistance(Vector1, Vector2) {
+            delegate_euclidean_distance = math.add(Vector1, math.multiply(Vector2, -1))
+            delegate_euclidean_distance = math.multiply(math.transpose(delegate_euclidean_distance), delegate_euclidean_distance)
+            return delegate_euclidean_distance._data[0]
         }
 
-        function game() {
+        function optimalDelegate(human, delegates) {
+            leastDistance = Infinity
+            optimalDel = 0
+            for (let i = 0; i < delegates.length; i++) {
+                delegate_euclidean_distance = math.add(delegates[i].opinionVector, math.multiply(human.opinionVector, -1))
+                delegate_euclidean_distance = math.multiply(math.transpose(delegate_euclidean_distance), delegate_euclidean_distance)
+
+                //delegate_dot_product = math.multiply(math.transpose(delegates[i].opinionVector), human.opinionVector)._data[0]
+                //delegate_dot_product = delegate_dot_product / (euclideanDistance(math.zeros(2, 1), human.opinionVector) * euclideanDistance(math.zeros(2, 1), delegates[i].opinionVector))
+
+                /*console.log(`human opinion was ${human.opinionVector} and delegate was ${delegates[i].opinionVector}
+                This means that the euclidean distance is: ${euclideanDistance(delegates[i].opinionVector, human.opinionVector)}
+                And the normalized dot product is ${delegate_dot_product}`)*/
+
+                dist = euclideanDistance(delegates[i].opinionVector, human.opinionVector)
+                if (dist < leastDistance) {
+                    leastDistance = dist
+                    optimalDel = i
+                }
+            }
+            return delegates[optimalDel]
+        }
+
+        function game(numberOfHumans, numberOfDelegates) {
             humans = []
             delegates = []
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < numberOfHumans; i++) {
                 humans[i] = human()
-                humans[i] = human()
-                humans[i] = human()
+            }
+
+            for (let i = 0; i < numberOfDelegates; i++) {
                 delegates[i] = delegate()
             }
 
+
             optimalDelegate(humans[0], delegates)
         }
-        game()
+
+        game(5, 2)
+
+
+        function visualizeOpinionVector(w, h, r) {
+            var canvas = document.createElement("Canvas");
+            canvas.height = h
+            canvas.width = w
+
+            canvas.style = "border:1px solid #000000;"
+            var ctx = canvas.getContext("2d");
+
+            putOpVecOnCanvas(ctx, humans, "#11BB66", w, h, r)
+
+            putOpVecOnCanvas(ctx, delegates, "#4411AA", w, h, r)
+
+            document.body.appendChild(canvas)
+        }
+
+        function putOpVecOnCanvas(ctx, opinionVectors, color, w, h, r) {
+            ctx.fillStyle = color;
+            for (let i = 0; i < opinionVectors.length; i++) {
+                const opVec = opinionVectors[i];
+                ctx.beginPath();
+                ctx.arc(w * opVec.opinionVector._data[0][0], h - h * opVec.opinionVector._data[1][0], r, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
+            }
+        }
+
+        visualizeOpinionVector(400, 400, 15)
+
         //One line fizzbuzz don't ask why
         /*for (let i = 1; i < 100; i++) {
             console.log(`${i}: ${"fizz".repeat((i % 3 == 0))}${"buzz".repeat((i % 5 == 0))}`)
